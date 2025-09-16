@@ -68,8 +68,8 @@ function App() {
 
   return html`
     <div class="space-y-6">
-      <!-- Controls -->
-      <section class="card">
+      <!-- Controls (section with shadow) -->
+      <section class="card shadow-md">
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-end">
           <div>
             <label class="block text-sm font-medium">Search</label>
@@ -113,7 +113,7 @@ function App() {
           const in1M = prettyMoney(r.input_price_per_1M_tokens * rate, currency);
           const out1M = prettyMoney(r.output_price_per_1M_tokens * rate, currency);
           return html`
-            <div key=${r.model_name} class="card hover:shadow-2xl hover:-translate-y-0.5 transition-all">
+            <div key=${r.model_name} class="card shadow-md hover:shadow-2xl hover:-translate-y-0.5 transition-all">
               <div class="flex items-center justify-between mb-2">
                 <div class="font-semibold truncate">${r.model_name}</div>
                 <span class="badge">${r.provider}</span>
@@ -147,8 +147,8 @@ function App() {
         })}
       </section>
 
-      <!-- Sortable table UNDER the cards -->
-      <section class="card">
+      <!-- Sortable table UNDER the cards (section with shadow) -->
+      <section class="card shadow-md">
         <h2 class="font-semibold mb-3">Model Pricing Table</h2>
         <div class="overflow-x-auto">
           <table class="table w-full text-sm text-left border border-slate-200 rounded-xl overflow-hidden shadow-sm">
