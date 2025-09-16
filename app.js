@@ -67,9 +67,10 @@ function App() {
   };
 
   return html`
-    <div class="space-y-6">
-      <!-- Controls (section with shadow) -->
-      <section class="card shadow-md">
+    <!-- MAIN container now has a border/line -->
+    <div class="space-y-6 border border-slate-300 rounded-2xl p-4 md:p-6 bg-white">
+      <!-- Controls (section with shadow + border) -->
+      <section class="card shadow-md border border-slate-300 rounded-2xl">
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-end">
           <div>
             <label class="block text-sm font-medium">Search</label>
@@ -113,7 +114,8 @@ function App() {
           const in1M = prettyMoney(r.input_price_per_1M_tokens * rate, currency);
           const out1M = prettyMoney(r.output_price_per_1M_tokens * rate, currency);
           return html`
-            <div key=${r.model_name} class="card shadow-md hover:shadow-2xl hover:-translate-y-0.5 transition-all">
+            <!-- Each card now has a border/line -->
+            <div key=${r.model_name} class="card shadow-md border border-slate-300 rounded-2xl hover:shadow-2xl hover:-translate-y-0.5 transition-all bg-white">
               <div class="flex items-center justify-between mb-2">
                 <div class="font-semibold truncate">${r.model_name}</div>
                 <span class="badge">${r.provider}</span>
@@ -147,11 +149,11 @@ function App() {
         })}
       </section>
 
-      <!-- Sortable table UNDER the cards (section with shadow) -->
-      <section class="card shadow-md">
+      <!-- Sortable table UNDER the cards (section with shadow + border) -->
+      <section class="card shadow-md border border-slate-300 rounded-2xl bg-white">
         <h2 class="font-semibold mb-3">Model Pricing Table</h2>
         <div class="overflow-x-auto">
-          <table class="table w-full text-sm text-left border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+          <table class="table w-full text-sm text-left border border-slate-300 rounded-xl overflow-hidden shadow-sm">
             <thead class="bg-gradient-to-r from-indigo-50 to-fuchsia-50 text-slate-700">
               <tr>
                 <th class="px-3 py-2 border cursor-pointer select-none" onClick=${() => sortToggle("model_name")}>
@@ -180,6 +182,5 @@ function App() {
     </div>
   `;
 }
-
 
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
