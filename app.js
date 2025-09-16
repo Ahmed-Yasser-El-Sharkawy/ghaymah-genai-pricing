@@ -2,7 +2,8 @@
 const { useState, useEffect, useMemo } = React;
 const html = htm.bind(React.createElement);
 
-const prettyMoney = (n, currency) => new Intl.NumberFormat(undefined, { style: "currency", currency, maximumFractionDigits: 4 }).format(n);
+const prettyMoney = (n, currency) =>
+  new Intl.NumberFormat(undefined, { style: "currency", currency, maximumFractionDigits: 4 }).format(n);
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
 function App() {
@@ -19,16 +20,24 @@ function App() {
   const isEGP = currency === "EGP";
   const rate = isEGP ? fx : 1;
 
+  // Table sorting (INSIDE the component)
+  const [sortKey, setSortKey] = useState("model_name"); // "model_name" | "input" | "output"
+  const [sortDir, setSortDir] = useState("asc");        // "asc" | "desc"
+
   useEffect(() => {
     fetch("./Models-price.json", { cache: "no-store" })
       .then(r => r.json())
-      .then(data => setRows(data.map(r => ({
-        ...r,
-        input_price_per_token: Number(r.input_price_per_1M_tokens) / 1_000_000,
-        output_price_per_token: Number(r.output_price_per_1M_tokens) / 1_000_000,
-        total_per_1M: Number(r.input_price_per_1M_tokens) + Number(r.output_price_per_1M_tokens)
-      }))))
-      .catch(() => setRows([]));
+      .then(data =>
+        setRows(
+          data.map(r => ({
+            ...r,
+            input_price_per_token: Number(r.input_price_per_1M_tokens) / 1_000_000,
+            output_price_per_token: Number(r.output_price_per_1M_tokens) / 1_000_000,
+            total_per_1M: Number(r.input_price_per_1M_tokens) + Number(r.output_price_per_1M_tokens),
+          }))
+        )
+      )
+      .catch(() => setRows([]))
   }, []);
 
   const filtered = useMemo(() => {
@@ -41,8 +50,25 @@ function App() {
       }));
   }, [rows, q, inTokens, outTokens]);
 
+  // Sorted source for the table
+  const sortedRows = useMemo(() => {
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...rows].sort((a, b) => {
+      if (sortKey === "model_name") return a.model_name.localeCompare(b.model_name) * dir;
+      if (sortKey === "input") return (a.input_price_per_1M_tokens - b.input_price_per_1M_tokens) * dir;
+      if (sortKey === "output") return (a.output_price_per_1M_tokens - b.output_price_per_1M_tokens) * dir;
+      return 0;
+    });
+  }, [rows, sortKey, sortDir]);
+
+  const sortToggle = (key) => {
+    if (sortKey === key) setSortDir(sortDir === "asc" ? "desc" : "asc");
+    else { setSortKey(key); setSortDir("asc"); }
+  };
+
   return html`
     <div class="space-y-6">
+      <!-- Controls -->
       <section class="card">
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-end">
           <div>
@@ -79,38 +105,15 @@ function App() {
         </div>
       </section>
 
-      <section class="card">
-        <h2 class="font-semibold mb-3">Model Pricing Table</h2>
-        <div class="overflow-x-auto">
-          <table class="table w-full text-sm text-left">
-            <thead class="bg-slate-100">
-              <tr>
-                <th>Model Name</th>
-                <th>Input / 1M</th>
-                <th>Output / 1M</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rows.map(r => html`
-                <tr key=${r.model_name}>
-                  <td class="font-medium">${r.model_name}</td>
-                  <td>${prettyMoney(r.input_price_per_1M_tokens * rate, currency)}</td>
-                  <td>${prettyMoney(r.output_price_per_1M_tokens * rate, currency)}</td>
-                </tr>
-              `)}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
+      <!-- Cards grid -->
       <section class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        ${filtered.map((r, idx) => {
+        ${filtered.map((r) => {
           const estDisp = prettyMoney(r.est_cost_usd * rate, currency);
           const total1M = prettyMoney(r.total_per_1M * rate, currency);
           const in1M = prettyMoney(r.input_price_per_1M_tokens * rate, currency);
           const out1M = prettyMoney(r.output_price_per_1M_tokens * rate, currency);
           return html`
-            <div key=${r.model_name} class="card">
+            <div key=${r.model_name} class="card hover:shadow-2xl hover:-translate-y-0.5 transition-all">
               <div class="flex items-center justify-between mb-2">
                 <div class="font-semibold truncate">${r.model_name}</div>
                 <span class="badge">${r.provider}</span>
@@ -129,19 +132,50 @@ function App() {
                   <div class="font-semibold">${total1M}</div>
                 </div>
               </div>
-              <div class="mt-3 rounded-xl border p-3 flex items-center justify-between">
-                <div>
-                  <div class="text-xs muted">Est. Session Cost</div>
+              <div class="mt-3 rounded-xl border p-3">
+                <div class="text-xs muted">Est. Session Cost</div>
+                <div class="h-px w-10 bg-slate-300 my-1"></div> <!-- tiny line -->
+                <div class="flex items-center justify-between">
                   <div class="text-xl font-bold">${estDisp}</div>
-                </div>
-                <div class="text-xs muted text-right">
-                  <div>Input: ${inTokens.toLocaleString()} tok</div>
-                  <div>Output: ${outTokens.toLocaleString()} tok</div>
+                  <div class="text-xs muted text-right">
+                    <div>Input: ${inTokens.toLocaleString()} tok</div>
+                    <div>Output: ${outTokens.toLocaleString()} tok</div>
+                  </div>
                 </div>
               </div>
-              <div class="mt-2 text-xs muted">Pricing is per 1M tokens; we divide by 1,000,000 to get per-token rate.</div>
             </div>`;
         })}
+      </section>
+
+      <!-- Sortable table UNDER the cards -->
+      <section class="card">
+        <h2 class="font-semibold mb-3">Model Pricing Table</h2>
+        <div class="overflow-x-auto">
+          <table class="table w-full text-sm text-left border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <thead class="bg-gradient-to-r from-indigo-50 to-fuchsia-50 text-slate-700">
+              <tr>
+                <th class="px-3 py-2 border cursor-pointer select-none" onClick=${() => sortToggle("model_name")}>
+                  Model Name ${sortKey==="model_name" ? (sortDir==="asc" ? "▲" : "▼") : ""}
+                </th>
+                <th class="px-3 py-2 border cursor-pointer select-none" onClick=${() => sortToggle("input")}>
+                  Input / 1M ${sortKey==="input" ? (sortDir==="asc" ? "▲" : "▼") : ""}
+                </th>
+                <th class="px-3 py-2 border cursor-pointer select-none" onClick=${() => sortToggle("output")}>
+                  Output / 1M ${sortKey==="output" ? (sortDir==="asc" ? "▲" : "▼") : ""}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              ${sortedRows.map(r => html`
+                <tr key=${r.model_name} class="odd:bg-slate-50 hover:bg-indigo-50/40 transition-colors">
+                  <td class="px-3 py-2 border font-medium whitespace-nowrap">${r.model_name}</td>
+                  <td class="px-3 py-2 border">${prettyMoney(r.input_price_per_1M_tokens * rate, currency)}</td>
+                  <td class="px-3 py-2 border">${prettyMoney(r.output_price_per_1M_tokens * rate, currency)}</td>
+                </tr>
+              `)}
+            </tbody>
+          </table>
+        </div>
       </section>
     </div>
   `;
