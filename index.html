@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ghaymah GenAI Pricing</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="Ghaymah GenAI – model pricing & estimator" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%236366f1'/></svg>">
+    <style>
+      .card { @apply rounded-2xl border border-slate-200 p-4 bg-white shadow-sm; }
+      .muted { @apply text-slate-500; }
+      .badge { @apply text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200; }
+      .btn { @apply inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-slate-50; }
+      .table th, .table td { @apply border border-slate-200 px-3 py-2; }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <header class="bg-gradient-to-br from-slate-900 via-indigo-900 to-fuchsia-900 text-white">
+      <div class="max-w-6xl mx-auto px-6 py-10">
+        <h1 class="text-3xl md:text-5xl font-black">Ghaymah GenAI Pricing</h1>
+        <p class="mt-2 text-white/80">Compare models, edit session tokens (10k steps), and convert to EGP.</p>
+      </div>
+    </header>
+    <main id="root" class="max-w-6xl mx-auto px-6 py-8"></main>
+    <footer class="max-w-6xl mx-auto px-6 pb-12 text-xs text-slate-500">© <span id="yr"></span> Ghaymah GenAI</footer>
+
+    <script>
+      document.getElementById('yr').textContent = new Date().getFullYear();
+    </script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

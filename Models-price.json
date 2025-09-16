@@ -1,0 +1,38 @@
+[
+  {
+    "model_name": "gemma-3-4b-it",
+    "provider": "Ghaymah GenAI",
+    "input_price_per_1M_tokens": 0.02,
+    "output_price_per_1M_tokens": 0.04
+  },
+  {
+    "model_name": "QwQ-32B",
+    "provider": "Ghaymah GenAI",
+    "input_price_per_1M_tokens": 0.15,
+    "output_price_per_1M_tokens": 0.2
+  },
+  {
+    "model_name": "DeepSeek-V3-0324",
+    "provider": "Ghaymah GenAI",
+    "input_price_per_1M_tokens": 0.38,
+    "output_price_per_1M_tokens": 0.89
+  },
+  {
+    "model_name": "Qwen/Qwen3-32B",
+    "provider": "Ghaymah GenAI",
+    "input_price_per_1M_tokens": 0.11,
+    "output_price_per_1M_tokens": 0.32
+  },
+  {
+    "model_name": "GLM-4.5-Air",
+    "provider": "Ghaymah GenAI",
+    "input_price_per_1M_tokens": 0.22,
+    "output_price_per_1M_tokens": 1.2
+  },
+  {
+    "model_name": "Kimi-K2-Instruct",
+    "provider": "Ghaymah GenAI",
+    "input_price_per_1M_tokens": 0.55,
+    "output_price_per_1M_tokens": 0.22
+  }
+]
