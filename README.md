@@ -1,0 +1,1 @@
+ghaymah-genai-pricing
